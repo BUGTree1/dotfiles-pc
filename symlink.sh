@@ -13,6 +13,7 @@ SYMLINK_STORE_HOME_PREFIX="${SCRIPT_DIR}/data/home/"
 declare -a files=(
 "opt/start-waydroid.sh"
 "opt/stop-waydroid.sh"
+"opt/dwl-session.sh"
 )
 
 declare -a home_files=(
@@ -47,10 +48,11 @@ declare -a folders=(
 )
 
 declare -a home_folders=(
+".config/foot"
 ".config/rofi"
-".config/mpv"
 ".config/yazi"
 ".config/cava"
+".config/mpv"
 ".urxvt/ext"
 ".emacs.d"
 ".nano"
