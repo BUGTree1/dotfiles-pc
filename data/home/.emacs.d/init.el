@@ -1,0 +1,459 @@
+;;; -*- lexical-binding: t -*-
+
+(when (< emacs-major-version 31)
+  (warn "This Emacs config was only tested with Emacs 31. It can thow errors! You have version %s!" emacs-major-version))
+
+;; Env variable for eglot lsps
+(setenv "DOTNET_ROOT" "/usr/share/dotnet")
+;;(setenv "NODE_PATH" "/usr/lib/node_modules")
+
+(add-to-list 'load-path (concat user-emacs-directory "modes"))
+
+;; add MELPA to the list of ELPAs that Emacs will read.
+(with-eval-after-load 'package
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t))
+
+;;(package-initialize)
+
+;; turn off the welcome screen, tool bars and scroll bars
+(setopt inhibit-splash-screen 1)
+(tool-bar-mode 0)
+(menu-bar-mode 0)
+(scroll-bar-mode 0)
+
+;; default mode for the *scratch* buffer
+(setopt initial-major-mode 'fundamental-mode)
+(setopt display-time-default-load-average nil)
+
+;; Automatically reread from disk if the underlying file changes by
+;; using the OS file change notification interface rather than
+;; repeatedly polling to see if there are changes.
+(setopt auto-revert-avoid-polling t)
+(setopt auto-revert-interval 5)
+(setopt auto-revert-check-vc-info t)
+(global-auto-revert-mode)
+
+;; Save history of minibuffer
+(savehist-mode)
+
+;; Save existing clipboard content to the kill ring---useful if you've
+;; copied something from an external program and then kill some text
+;; in Emacs shortly after. Also, deduplicate kill ring contents.
+(setopt save-interprogram-paste-before-kill t)
+(setopt kill-do-not-save-duplicates t)
+(setq x-selection-timeout 10)
+
+;; Don't ping url-looking things when running find-file
+(setopt ffap-machine-p-known 'reject)
+
+;; Rebalance windows automatically when splitting
+(setopt window-combination-resize t)
+
+(setopt split-window-preferred-direction 'longest)
+
+;; Fix archaic defaults
+(setopt sentence-end-double-space nil)
+
+;; Make all confirmation prompts use `y' or `n'
+(setopt use-short-answers t)
+
+;; Make right-click do something sensible and shift-drag behave better
+(when (display-graphic-p)
+  (mouse-shift-adjust-mode)
+  (context-menu-mode))
+
+;; Don't litter file system with *~ backup files
+(setq-default make-backup-files nil)
+
+;; tell Emacs to assume left-to-right text in all buffers.
+(setq-default bidi-paragraph-direction 'left-to-right)
+(setq bidi-inhibit-bpa 1)
+
+(use-package which-key
+  :config
+  (which-key-mode))
+
+(setopt enable-recursive-minibuffers t)                ; Use the minibuffer whilst in the minibuffer
+(setopt completion-cycle-threshold t)                  ; TAB cycles candidates
+(setopt completions-detailed t)                        ; Show annotations
+(setopt tab-always-indent 'complete)                   ; When I hit TAB, try to complete, otherwise, indent
+(setopt completion-styles '(basic initials substring)) ; Different styles to match input to candidates
+
+(setopt minibuffer-visible-completions t)              ; Use ↑↓ to select candidates
+(setopt completion-auto-help 'always)                  ; Open completion always; `lazy' another option
+(setopt completions-max-height 20)                     ; This is an arbitrary value
+(setopt completions-format 'one-column)                ; Makes it easier to scroll
+(setopt completions-group t)
+
+;; Eager completion setup: show *Completions* buffer immediately
+(setopt completion-auto-select 'second-tab)            ; Much more eager
+(setopt completion-eager-display t)                    ; Show the completions buffer immediately
+(setopt completion-eager-update t)                     ; Update display as-you-type
+
+(keymap-set minibuffer-mode-map "TAB" 'minibuffer-complete)
+
+(with-eval-after-load 'isearch
+  (assq-delete-all (kbd "C-s") isearch-mode-map)
+  (assq-delete-all (kbd "C-r") isearch-mode-map)
+  (assq-delete-all (kbd "DEL") isearch-mode-map)
+  (define-key isearch-mode-map (kbd "C-f")   #'isearch-repeat-forward)
+  (define-key isearch-mode-map (kbd "C-S-f") #'isearch-repeat-backward)
+  (define-key isearch-mode-map (kbd "DEL")   #'isearch-del-char))
+
+;; isearch is Emacs's built-in searching system
+(use-package isearch
+  :ensure nil                           ; already installed
+  ;;:bind
+  ;;(:map isearch-mode-map
+  ;;      ("C-f" . isearch-repeat-forward)) ; Search for the next occurance
+  :custom
+  (lazy-count-prefix-format "(%s/%s) ")
+  (isearch-lazy-count 1)                 ; show match count
+  (isearch-allow-motion 1)
+  (isearch-allow-scroll 1)               ; lets you scroll without breaking search
+  (isearch-repeat-on-direction-change 1) ; C-r immediately goes to previous match
+  (isearch-wrap-pause 'no-ding)          ; Automatically wrap search to top
+  )
+
+;; Mode line information
+(setopt line-number-mode t)                        ; Show current line in modeline
+(setopt column-number-mode t)                      ; Show column as well
+(setopt mode-line-collapse-minor-modes nil)        ; nil default; set to `t' to hide minor modes
+(setq-default display-line-numbers-width 3)
+(global-display-line-numbers-mode)
+
+;; Whitespace
+(setq whitespace-style '(face tabs tab-mark spaces space-mark))
+(global-whitespace-mode)
+
+(setopt x-underline-at-descent-line nil)           ; Prettier underlines
+(setopt switch-to-buffer-obey-display-actions t)   ; Make switching buffers more consistent
+
+(setopt show-trailing-whitespace nil)      ; By default, don't underline trailing spaces
+(setopt indicate-buffer-boundaries 'left)  ; Show buffer top and bottom in the margin
+
+;; Enable horizontal scrolling
+(setopt mouse-wheel-tilt-scroll t)
+(setopt mouse-wheel-flip-direction t)
+
+;; Update the cursor shape inside a terminal; e.g. when in insert mode
+;; when using Evil (Vim emulation) change the cursor to a bar.
+(setopt xterm-update-cursor t)
+
+(setopt tab-width 4)
+(setopt indent-tabs-mode nil) ; Only use spaces to perform indentation
+
+;; (blink-cursor-mode -1)
+
+(pixel-scroll-precision-mode)
+(setopt pixel-scroll-precision-interpolate-mice nil)
+
+;; Makes it easier to repeat commands; `C-x o C-x o' becomes `C-x o o'
+(repeat-mode)
+
+;; Nice line wrapping when working with text
+(add-hook 'text-mode-hook 'visual-line-mode)
+
+;; Highlight the line with the cursor in all windows
+(setopt global-hl-line-sticky-flag 'window)
+(global-hl-line-mode)
+
+;; Show matching delimiters
+(setopt show-paren-delay 0)
+(setopt show-paren-mode t)
+(setopt show-paren-style 'expression)   ; default is 'parenthesis and just does delimiters
+(setopt show-paren-context-when-offscreen 'overlay)
+
+;; Show a tab bar near the buffer name
+(setopt tab-bar-show t)
+
+(add-to-list 'tab-bar-format 'tab-bar-format-align-right 'append)
+(add-to-list 'tab-bar-format 'tab-bar-format-global 'append)
+
+;; c-mode
+(setq-default c-basic-offset 4
+              c-default-style '((java-mode . "java")
+                                (awk-mode . "awk")
+                                (other . "bsd")))
+(use-package yasnippet
+  :ensure t
+  :config
+  (yas-global-mode 1))
+(use-package yasnippet-snippets
+  :ensure t
+  :after yasnippet)
+
+(use-package multiple-cursors)
+(use-package markdown-mode
+  :hook ((markdown-mode . visual-line-mode)))
+(use-package yaml-mode)
+(use-package json-mode)
+(add-hook 'web-mode-hook (lambda () (setq web-mode-style-padding 4 web-mode-script-padding 4)))
+(use-package web-mode)
+
+(require 'simpc-mode)
+
+(add-to-list 'auto-mode-alist '("\\.[hc]\\(pp\\)?\\'" . simpc-mode))
+(add-to-list 'auto-mode-alist '("\\.html\\'"          . web-mode))
+
+;; Eglot LSP Backend
+(use-package eglot
+  ;; no :ensure t here because it's built-in
+
+  ;; Configure hooks to automatically turn-on eglot for selected modes
+  :hook
+  (((python-mode simpc-mode csharp-mode html-mode js-mode css-mode web-mode) . eglot-ensure))
+
+  :custom
+  (eglot-send-changes-idle-time 0.1)
+  (eglot-extend-to-xref 1)              ; activate Eglot in referenced non-project files
+
+  :config
+  ;; Avoid changing line heights if your font is wonky. See
+  ;; https://github.com/joaotavora/eglot/discussions/1492
+  (setopt eglot-code-action-indicator "h")
+
+  (fset #'jsonrpc--log-event #'ignore)  ; massive perf boost---don't log every event
+  ;; Sometimes you need to tell Eglot where to find the language server
+  (add-to-list 'eglot-server-programs
+               '(simpc-mode . ("clangd" "--clang-tidy=false")))
+
+  (add-to-list 'eglot-server-programs
+               '(web-mode . ("vscode-html-language-server" "--stdio" :initializationOptions (:provideFormatter t))))
+
+  ;;(add-to-list 'eglot-server-programs
+  ;;             '(mhtml-mode . ("vscode-html-language-server" "--stdio")))
+
+  ;;(add-to-list 'eglot-server-programs
+  ;;             '((js-mode js-ts-mode rjsx-mode typescript-mode tsx-ts-mode typescript-ts-mode) . ("tsc" "--lsp" "--stdio")))
+
+  ;;(add-to-list 'eglot-server-programs
+  ;;             '((html-mode mhtml-mode html-ts-mode) . ("vscode-html-language-server" "--stdio")))
+
+  ;;(add-to-list 'eglot-server-programs
+  ;;             '((css-mode css-ts-mode scss-mode less-css-mode) . ("vscode-css-language-server" "--stdio")))
+
+  (add-to-list 'eglot-ignored-server-capabilities :inlayHintProvider)
+
+  ;; You can set various options for each language server. For
+  ;; example, you can raise the number of completions surfaced by a
+  ;; given langauge server to Emacs:
+  ;; (setopt eglot-workspace-configuration )
+)
+
+;; Company LSP Frontend
+(use-package company)
+(global-company-mode)
+
+(set-frame-parameter nil 'alpha-background 95)
+(add-to-list 'default-frame-alist '(alpha-background . 95))
+
+;;(set-face-attribute 'default nil :height 100)
+(set-frame-font "FiraCode Nerd Font Mono 18" nil t)
+
+;;(use-package sorcery)
+
+;;(load-theme 'sorcery 1)
+
+(use-package ef-themes
+  :ensure t
+  :init
+  ;; This makes the Modus commands listed below consider only the Ef
+  ;; themes.  For an alternative that includes Modus and all
+  ;; derivative themes (like Ef), enable the
+  ;; `modus-themes-include-derivatives-mode' instead.  The manual of
+  ;; the Ef themes has a section that explains all the possibilities:
+  ;;
+  ;; - Evaluate `(info "(ef-themes) Working with other Modus themes or taking over Modus")'
+  ;; - Visit <https://protesilaos.com/emacs/ef-themes#h:6585235a-5219-4f78-9dd5-6a64d87d1b6e>
+  (ef-themes-take-over-modus-themes-mode 1)
+  ;;  :bind
+  ;;  (("<f5>" . modus-themes-rotate)
+  ;;   ("C-<f5>" . modus-themes-select)
+  ;;   ("M-<f5>" . modus-themes-load-random))
+  :config
+  ;; All customisations here.
+  (setq modus-themes-mixed-fonts t)
+  (setq modus-themes-italic-constructs t)
+
+  ;; Finally, load your theme of choice (or a random one with
+  ;; `modus-themes-load-random', `modus-themes-load-random-dark',
+  ;; `modus-themes-load-random-light').
+  ;;(modus-themes-load-theme 'ef-symbiosis)
+  ;;(modus-themes-load-theme 'ef-bio)
+  (modus-themes-load-theme 'ef-dark)
+)
+
+(electric-pair-mode 1)
+(electric-indent-mode 1)
+(setq electric-indent-inhibit t)
+(add-hook 'text-mode-hook #'turn-on-auto-fill)
+(setq-default fill-column 100)
+
+(delete-selection-mode 1)
+
+(setq winner-dont-bind-my-keys t)
+(winner-mode 1)
+
+(defun my/rectangle-select-cursors (event)
+  (interactive "e")
+  (let* ((point-pos (point))
+         (mark-pos (mark))
+         (point-line (line-number-at-pos point-pos))
+         (mark-line (line-number-at-pos mark-pos))
+         (point-col (current-column))
+         (mark-col
+          (save-excursion
+            (goto-char mark-pos)
+            (current-column)))
+         (top-pos (if (<= point-line mark-line)
+                      point-pos mark-pos))
+         (bottom-pos (if (>= point-line mark-line)
+                         point-pos mark-pos))
+         (left-col (min point-col mark-col))
+         (right-col (max point-col mark-col))
+         (line-count
+          (1+ (abs (- point-line mark-line))))
+         top-left
+         bottom-right)
+
+    ;; Remove existing fake cursors and temporarily deactivate the region.
+    (mc/remove-fake-cursors)
+    (deactivate-mark)
+
+    ;; Place the primary cursor at the rectangle's top-left edge.
+    (goto-char top-pos)
+    (beginning-of-line)
+    (move-to-column left-col)
+    (setq top-left (point))
+
+    ;; Add a fake cursor at the same column on every other line.
+    (dotimes (_ (1- line-count))
+      (forward-line 1)
+      (move-to-column left-col)
+      (mc/create-fake-cursor-at-point))
+
+    ;; Calculate the rectangle's opposite corner.
+    (goto-char bottom-pos)
+    (beginning-of-line)
+    (move-to-column right-col)
+    (setq bottom-right (point))
+
+    ;; Enable multiple cursors, then restore the rectangle selection.
+    (multiple-cursors-mode 1)
+    (goto-char top-left)
+    (set-mark bottom-right)
+    (rectangle-mark-mode 1)))
+
+;; Use common keybindings by default
+;;(cua-mode)
+
+;;(setq minor-mode-map-alist nil)
+;;(with-eval-after-load 'simpc-mode (setq simpc-mode-map (make-sparse-keymap)))
+(with-eval-after-load 'simpc-mode (setcdr simpc-mode-map nil) (set-keymap-parent simpc-mode-map nil))
+(with-eval-after-load 'emacs-lisp-mode (setcdr emacs-lisp-mode-map nil) (set-keymap-parent emacs-lisp-mode-map nil))
+
+(define-key key-translation-map (kbd "C-c") (kbd "M-C-s-c"))
+
+(setq shift-select-mode t)
+
+(defvar my/global-map (make-keymap))
+(substitute-key-definition 'self-insert-command 'self-insert-command my/global-map (current-global-map))
+(define-key my/global-map (kbd "RET")                            #'newline)
+(define-key my/global-map (kbd "TAB")                            #'indent-for-tab-command)
+(define-key my/global-map (kbd "DEL")                            #'delete-backward-char)
+(define-key my/global-map (kbd "<deletechar>")                   #'delete-char)
+(define-key my/global-map (kbd "<escape>")                       #'keyboard-escape-quit)
+(define-key my/global-map (kbd "<up>")                           #'previous-line)
+(define-key my/global-map (kbd "<down>")                         #'next-line)
+(define-key my/global-map (kbd "<left>")                         #'backward-char)
+(define-key my/global-map (kbd "<right>")                        #'forward-char)
+(define-key my/global-map (kbd "<home>")                         #'beginning-of-line)
+(define-key my/global-map (kbd "<end>")                          #'end-of-line)
+(define-key my/global-map (kbd "C-<up>")                         (lambda () (interactive "^") (previous-line) (beginning-of-line)))
+(define-key my/global-map (kbd "C-<down>")                       (lambda () (interactive "^") (next-line) (end-of-line)))
+(define-key my/global-map (kbd "C-<left>")                       #'backward-word)
+(define-key my/global-map (kbd "C-<right>")                      #'forward-word)
+(define-key my/global-map (kbd "C-{")                            #'backward-sexp)
+(define-key my/global-map (kbd "C-}")                            #'forward-sexp)
+(define-key my/global-map (kbd "C-<")                            #'backward-paragraph)
+(define-key my/global-map (kbd "C->")                            #'forward-paragraph)
+(define-key my/global-map (kbd "M-C-s-c")                        #'kill-ring-save)
+(define-key my/global-map (kbd "C-x")                            #'kill-region)
+(define-key my/global-map (kbd "C-v")                            #'yank)
+
+(define-key my/global-map (kbd "<down-mouse-1>")                 (lambda (event) (interactive "e") (mouse-drag-region event) (mc/keyboard-quit)))
+(define-key my/global-map (kbd "<drag-mouse-1>")                 #'mouse-set-region)
+(define-key my/global-map (kbd "<mouse-1>")                      #'mouse-set-point)
+(define-key my/global-map (kbd "<mouse-2>")                      #'mouse-yank-primary)
+(define-key my/global-map (kbd "<mouse-3>")                      #'mouse-save-then-kill)
+(define-key my/global-map (kbd "<mouse-4>")                      #'mwheel-scroll)
+(define-key my/global-map (kbd "<mouse-5>")                      #'mwheel-scroll)
+(define-key my/global-map (kbd "<mouse-8>")                      #'undo)
+(define-key my/global-map (kbd "<mouse-9>")                      #'undo-redo)
+(define-key my/global-map (kbd "<wheel-up>")                     #'mwheel-scroll)
+(define-key my/global-map (kbd "<wheel-down>")                   #'mwheel-scroll)
+(define-key my/global-map (kbd "C-<down-mouse-1>")               #'mouse-buffer-menu)
+(define-key my/global-map (kbd "C-<down-mouse-2>")               #'facemenu-menu)
+(define-key my/global-map (kbd "C-<down-mouse-3>")               #'mouse-major-mode-menu)
+(define-key my/global-map (kbd "S-<down-mouse-1>")               #'mouse-appearance-menu)
+(define-key my/global-map (kbd "M-<down-mouse-1>")               #'mouse-drag-region-rectangle)
+(define-key my/global-map (kbd "M-<drag-mouse-1>")               #'my/rectangle-select-cursors)
+(define-key my/global-map (kbd "M-<mouse-1>")                    #'mc/add-cursor-on-click)
+(define-key my/global-map (kbd "<C-wheel-up>")                   #'text-scale-increase)
+(define-key my/global-map (kbd "<C-wheel-down>")                 #'text-scale-decrease)
+(define-key my/global-map (kbd "<vertical-line> <down-mouse-1>") #'mouse-drag-vertical-line)
+(define-key my/global-map (kbd "<vertical-line> <drag-mouse-1>") #'mouse-drag-vertical-line)
+(define-key my/global-map (kbd "<vertical-line> <mouse-1>")      #'ignore)
+(define-key my/global-map (kbd "<mode-line> <down-mouse-1>")     #'mouse-drag-mode-line)
+(define-key my/global-map (kbd "<mode-line> <drag-mouse-1>")     #'mouse-drag-mode-line)
+(define-key my/global-map (kbd "<mode-line> <mouse-1>")          #'ignore)
+
+(define-key my/global-map (kbd "C-a")                            #'mark-whole-buffer)
+(define-key my/global-map (kbd "C-z")                            #'undo)
+(define-key my/global-map (kbd "C-y")                            #'undo-redo)
+(define-key my/global-map (kbd "C-f")                            #'isearch-forward-regexp)
+(define-key my/global-map (kbd "C-h")                            #'query-replace-regexp)
+(define-key my/global-map (kbd "C-s")                            #'save-buffer)
+(define-key my/global-map (kbd "C-M-z")                          #'winner-undo)
+(define-key my/global-map (kbd "C-M-y")                          #'winner-redo)
+(define-key my/global-map (kbd "C-M-a")                          #'align-regexp)
+
+(define-key my/global-map (kbd "M-x")                            #'execute-extended-command)
+(define-key my/global-map (kbd "C-M-S-q")                        #'save-buffers-kill-terminal)
+(define-key my/global-map (kbd "C-M-h")                          #'describe-key)
+(define-key my/global-map (kbd "M-f")                            #'find-file)
+(define-key my/global-map (kbd "M-b")                            #'buffer-menu)
+(define-key my/global-map (kbd "M-s")                            #'shell-command)
+(define-key my/global-map (kbd "C-M-s")                          #'async-shell-command)
+(define-key my/global-map (kbd "M-c")                            #'recompile)
+(define-key my/global-map (kbd "C-M-c")                          #'compile)
+(define-key my/global-map (kbd "M-<up>")                         #'windmove-up)
+(define-key my/global-map (kbd "M-<down>")                       #'windmove-down)
+(define-key my/global-map (kbd "M-<left>")                       #'windmove-left)
+(define-key my/global-map (kbd "M-<right>")                      #'windmove-right)
+(define-key my/global-map (kbd "C-M-<up>")                       #'split-window-vertically)
+(define-key my/global-map (kbd "C-M-<down>")                     #'split-window-vertically)
+(define-key my/global-map (kbd "C-M-<left>")                     #'split-window-horizontally)
+(define-key my/global-map (kbd "C-M-<right>")                    #'split-window-horizontally)
+(define-key my/global-map (kbd "M-q")                            #'delete-window)
+(define-key my/global-map (kbd "C-M-q")                          (lambda () (interactive) (kill-buffer (current-buffer))))
+(use-global-map my/global-map)
+
+(with-eval-after-load 'dired (define-key dired-mode-map (kbd "F") 'dired-create-empty-file))
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("01a9797244146bbae39b18ef37e6f2ca5bebded90d9fe3a2f342a9e863aaa4fd" default))
+ '(package-selected-packages
+   '(2048-game gruber-darker-theme json-mode markdown-mode simpc-mode yaml-mode)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

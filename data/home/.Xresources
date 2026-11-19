@@ -1,0 +1,61 @@
+Xcursor.theme: Obsidian
+Xcursor.size: 21
+
+Xft.dpi:        96
+Xft.antialias:  true
+Xft.rgba:       rgb
+Xft.hinting:    true
+Xft.hintstyle:  hintslight
+Xft.autohint:   false
+Xft.lcdfilter:  lcddefault
+URxvt.perl-ext-common: default,vtwheel,font-size,-matcher,-confirm-paste
+URxvt.scrollBar: false
+URxvt.scrollBar_right: false
+URxvt.scrollBar_floating: false
+URxvt.scrollstyle: rxvt
+URxvt*saveLines: 16384
+URxvt.iso14755: false
+URxvt.iso14755_52: false
+URxvt.keysym.Control-Shift-C:     eval:selection_to_clipboard
+URxvt.keysym.Control-Shift-V:     eval:paste_clipboard
+URxvt.keysym.Control-KP_Add:      font-size:increase
+URxvt.keysym.Control-KP_Subtract: font-size:decrease
+URxvt.keysym.Control-equal:       font-size:increase
+URxvt.keysym.Control-minus:       font-size:decrease
+
+URxvt.geometry: 95x26
+
+URxvt.font:           xft:Hack\ Nerd\ Font\ Mono:size=14
+URxvt.boldFont:       xft:Hack\ Nerd\ Font\ Mono:size=14:style=Bold
+URxvt.italicFont:     xft:Hack\ Nerd\ Font\ Mono:size=14:style=Italic
+URxvt.boldItalicFont: xft:Hack\ Nerd\ Font\ Mono:size=14:style=Bold Italic
+
+URxvt.depth:32
+
+URxvt.background:rgba:0a0a/0c0c/1010/8888
+URxvt.foreground:rgba:f0f0/f3f3/f6f6/ffff
+
+!black
+URxvt.color0:rgba:0a0a/0c0c/1010/8888
+URxvt.color8:rgba:9e9e/a7a7/b3b3/ffff
+!red
+URxvt.color1:rgba:ffff/9494/9f9f/ffff
+URxvt.color9:rgba:ffff/b1b1/afaf/ffff
+!green
+URxvt.color2:rgba:1616/cdcd/6868/ffff
+URxvt.color10:rgba:4a4a/e1e1/6868/ffff
+!yellow
+URxvt.color3:rgba:f0f0/b7b7/2f2f/ffff
+URxvt.color11:rgba:f7f7/c8c8/4343/ffff
+!blue
+URxvt.color4:rgba:7171/b7b7/ffff/ffff
+URxvt.color12:rgba:9191/cbcb/ffff/ffff
+!magenta
+URxvt.color5:rgba:cbcb/9e9e/ffff/ffff
+URxvt.color13:rgba:cbcb/9e9e/ffff/ffff
+!cyan
+URxvt.color6:rgba:3939/c5c5/cfcf/ffff
+URxvt.color14:rgba:3939/c5c5/cfcf/ffff
+!white
+URxvt.color7:rgba:d9d9/dede/e3e3/ffff
+URxvt.color15:rgba:d9d9/dede/e3e3/ffff

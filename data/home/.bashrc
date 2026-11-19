@@ -1,0 +1,31 @@
+#
+# ~/.bashrc
+#
+
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
+
+source ~/.profile
+
+export PATH="$HOME/.npm-global/bin:$PATH"
+export PATH="/usr/bin:$PATH"
+
+if [[ -n "${ZED_TERM}" ]]; then
+    CURRENT_DIR=$(pwd)
+    PROJECT_NAME=$(basename "${CURRENT_DIR}")
+    ZED_HISTORY_DIR="${HOME}/.config/zed/history/$PROJECT_NAME"
+    mkdir -p "${ZED_HISTORY_DIR}"
+    export HISTFILE="${ZED_HISTORY_DIR}/.bash_history"
+fi
+
+export HISTSIZE=100
+export HISTFILESIZE=100
+export PROMPT_COMMAND="history -a"
+shopt -s histappend
+
+source /usr/share/bash-completion/bash_completion
+
+bind 'set show-all-if-ambiguous on'
+bind 'TAB:menu-complete'
+
+clear
