@@ -13,10 +13,6 @@ SYMLINK_STORE_HOME_PREFIX="${SCRIPT_DIR}/data/home/"
 declare -a files=(
 "opt/start-waydroid.sh"
 "opt/stop-waydroid.sh"
-"opt/dwl/dwl"
-"opt/dwl-session.sh"
-"opt/dwl-autostart.sh"
-"opt/dwl-bar.sh"
 )
 
 declare -a home_files=(
