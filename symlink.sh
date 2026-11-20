@@ -26,8 +26,8 @@ declare -a home_files=(
 ".config/alacritty/alacritty.toml"
 ".config/alacritty/github_dark_high_contrast.toml"
 ".config/xdg-desktop-portal/portals.conf"
-".config/weston.ini"
 ".config/plasmashellrc"
+".config/weston.ini"
 ".bash_profile"
 ".bashrc"
 ".zshrc"
@@ -47,6 +47,8 @@ declare -a folders=(
 )
 
 declare -a home_folders=(
+".config/qt6ct"
+".config/qt5ct"
 ".config/foot"
 ".config/rofi"
 ".config/yazi"

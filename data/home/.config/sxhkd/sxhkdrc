@@ -26,6 +26,9 @@ super + shift + s
 #super + shift + c
 #	clipcat-menu --rofi-menu-length 10
 
+super + shift + c
+	copyq menu
+
 super + alt + c
 	urxvt -e peaclock
 

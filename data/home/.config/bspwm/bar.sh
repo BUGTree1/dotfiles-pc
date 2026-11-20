@@ -39,22 +39,23 @@ trap 'rm -f "$FIFO"; kill $(jobs -p) 2>/dev/null' EXIT INT TERM
 # --- 1. Clock Generator ---
 (
     while true; do
-        BATTERY_STATUS="UNK"
-        BATTERY_SYS_STATUS=$(cat "${BATTERY_PATH}/status")
-        $( echo "${BATTERY_SYS_STATUS}" | grep -q -i "charging" ) && {
-            BATTERY_STATUS="CHG"
-        }
-        $( echo "${BATTERY_SYS_STATUS}" | grep -q -i "not charging" ) && {
-            BATTERY_STATUS="NCH"
-        }
-        $( echo "${BATTERY_SYS_STATUS}" | grep -q -i "discharging" ) && {
-            BATTERY_STATUS="%{F${DCH_FG}}%{B${DCH_BG}}DCH%{F-}%{B-}"
-        }
-        $( echo "${BATTERY_SYS_STATUS}" | grep -q -i "full" ) && {
-            BATTERY_STATUS="FUL"
-        }
-
-        echo "T ${BATTERY_STATUS} $(cat ${BATTERY_PATH}/capacity)% $(date '+%Y-%m-%d %H:%M:%S')"
+#        BATTERY_STATUS="UNK"
+#        BATTERY_SYS_STATUS=$(cat "${BATTERY_PATH}/status")
+#        $( echo "${BATTERY_SYS_STATUS}" | grep -q -i "charging" ) && {
+#            BATTERY_STATUS="CHG"
+#        }
+#        $( echo "${BATTERY_SYS_STATUS}" | grep -q -i "not charging" ) && {
+#            BATTERY_STATUS="NCH"
+#        }
+#        $( echo "${BATTERY_SYS_STATUS}" | grep -q -i "discharging" ) && {
+#            BATTERY_STATUS="%{F${DCH_FG}}%{B${DCH_BG}}DCH%{F-}%{B-}"
+#        }
+#        $( echo "${BATTERY_SYS_STATUS}" | grep -q -i "full" ) && {
+#            BATTERY_STATUS="FUL"
+#        }
+#
+#        echo "T ${BATTERY_STATUS} $(cat ${BATTERY_PATH}/capacity)% $(date '+%Y-%m-%d %H:%M:%S')"
+	echo "T $(date '+%Y-%m-%d %H:%M:%S')"
         sleep 1
     done
 ) > "$FIFO" &
