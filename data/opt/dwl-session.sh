@@ -6,4 +6,6 @@ export MOZ_ENABLE_WAYLAND=1
 
 dbus-update-activation-environment --systemd --all
 
-exec dwl
+swaybg -i ~/Pictures/ArchLinux_Synthwave_4K_Wallpaper.png -m fit -o '*'
+
+/opt/dwl-bar.sh | dwl -s "/opt/dwl-autostart.sh"
