@@ -119,3 +119,4 @@ copyq &
 
 ${SUDO_CMD} vmware-networks --start
 
+sunshine &
